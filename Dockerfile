@@ -242,6 +242,13 @@ RUN --mount=target=/var/lib/apt/lists,type=cache --mount=target=/var/cache/apt,t
         && RCLONE_URL="$(wget -q -O - "$(printf "$DEB_UPDATE_URL" | sed 's/{product}/unifi-rclone/')" | jq -r '._embedded.firmware[0]._links.data.href')" \
         && echo "RCLONE_URL=${RCLONE_URL}" \
         && wget --no-verbose --show-progress --progress=dot:giga -O /opt/unifi-rclone.deb "$RCLONE_URL" \
+        # unifi-user-assets (needed by Protect >= 7.3) and its unifi-face-shared-lib dependency are not in the trixie apt repo either \
+        && USER_ASSETS_URL="$(wget -q -O - "$(printf "$DEB_UPDATE_URL" | sed 's/{product}/unifi-user-assets/')" | jq -r '._embedded.firmware[0]._links.data.href')" \
+        && echo "USER_ASSETS_URL=${USER_ASSETS_URL}" \
+        && wget --no-verbose --show-progress --progress=dot:giga -O /opt/unifi-user-assets.deb "$USER_ASSETS_URL" \
+        && FACE_LIB_URL="$(wget -q -O - "$(printf "$DEB_UPDATE_URL" | sed 's/{product}/unifi-face-shared-lib/')" | jq -r '._embedded.firmware[0]._links.data.href')" \
+        && echo "FACE_LIB_URL=${FACE_LIB_URL}" \
+        && wget --no-verbose --show-progress --progress=dot:giga -O /opt/unifi-face-shared-lib.deb "$FACE_LIB_URL" \
         && wget --no-verbose --show-progress --progress=dot:giga -O /opt/unifi-protect.deb "$PROTECT_URL" \
         && wget --no-verbose --show-progress --progress=dot:giga -O /opt/ai-feature-console.deb "$AIFC_CNS_URL" \
         && wget --no-verbose --show-progress --progress=dot:giga -O /opt/ai-feature-controller.deb "$AIFC_CTR_URL" \
