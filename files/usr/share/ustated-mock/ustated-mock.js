@@ -12,6 +12,8 @@ const protoLoader = require(path.join(MODULES, '@grpc/proto-loader'));
 
 const ADDRESS = '127.0.0.1:11052';
 const SRV = '/srv';
+// Size the space from the video dir: it may be a separate mount (e.g. NFS) under /srv.
+const VIDEO_DIR = '/srv/unifi-protect/video';
 const UPDATE_INTERVAL_MS = 30000;
 
 const load = (file) => grpc.loadPackageDefinition(protoLoader.loadSync(path.join(__dirname, file), {
@@ -26,10 +28,14 @@ const accessory = load('accessory.proto').unifi.firmware.accessory.v1;
 function getSpaces() {
     let stats;
     try {
-        stats = fs.statfsSync(SRV);
-    } catch (err) {
-        console.error(`statfs ${SRV} failed: ${err.message}`);
-        return [];
+        stats = fs.statfsSync(VIDEO_DIR);
+    } catch {
+        try {
+            stats = fs.statfsSync(SRV);
+        } catch (err) {
+            console.error(`statfs ${SRV} failed: ${err.message}`);
+            return [];
+        }
     }
 
     const totalBytes = stats.blocks * stats.bsize;
