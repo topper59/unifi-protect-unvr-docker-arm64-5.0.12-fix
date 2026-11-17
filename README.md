@@ -45,6 +45,10 @@ If running inside a VM, make sure to bridge its net adapter or forward ports fro
 Use the `build.sh` script or `Dockerfile`.  
 This will download and extract the firmware packages from the latest version available for the `UNVR` from the official UniFi download source (https://fw-update.ubnt.com) and then build Protect, all inside docker containers.
 
+> [!NOTE]
+> Building on a board with 4 GB RAM (like a Raspberry Pi 4 4GB) needs swap configured (zram works), else the build may run
+> out of memory. The extra memory is only needed during the build.
+
 There are two image variants:
 - `edge` - uses latest Protect version 
 - `stable` - uses Protect version packaged in UNVR firmware 
@@ -148,7 +152,10 @@ navigate to `http://host-ip`.
 Make sure you have disconnected the internet on the docker host (else it will auto update and may break the container),
 and proceed with the offline mode setup.  
 After the initial setup, got to console settings and disable auto update of the console and applications.  
-The auto-update does not work and may break the container.
+The auto-update does not work and may break the container.  
+Each console auto-update attempt reboots the console inside the container. If it keeps rebooting itself on a schedule,
+set `autoUpdate.schedule: null` in unifi-core's `firmware.yaml` (the schedule only accepts `daily` or `weekly`, so clearing
+it is how it is turned off).
 
 You can now proceed to add cameras to Protect.
 
