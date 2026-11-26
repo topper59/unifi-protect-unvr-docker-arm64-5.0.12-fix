@@ -93,16 +93,20 @@ ARG DS_URL
 # UniFi Protect evidence verification CLI
 ARG PROTECT_VERIFY_URL
 ARG AIFC_CNS_STABLE_URL="https://fw-download.ubnt.com/data/ai-feature-console/a678-uos-deb13-arm64-1.11.0-636c4bf3-485f-4231-a1ee-902e5024b4b1.deb"
-ARG AIFC_CTR_STABLE_URL="https://fw-download.ubnt.com/data/ai-feature-controller/6c45-uos-deb13-arm64-2.0.17-725ca246-0120-46c3-a5fc-037e3dd6b698.deb"
-ARG DS_STABLE_URL="https://fw-download.ubnt.com/data/ds/5ec4-uos-deb13-arm64-7.2.14-f090486c-0751-4ca2-8ddb-66f6d78a278f.deb"
+ARG AIFC_CTR_STABLE_URL="https://fw-download.ubnt.com/data/ai-feature-controller/3b3e-uos-deb13-arm64-2.1.5-0d34fc7f-fc72-4693-b58b-dc0dd2c86878.deb"
+ARG DS_STABLE_URL="https://fw-download.ubnt.com/data/ds/6406-uos-deb13-arm64-7.3.6-108c5dae-10d3-4161-8437-7254b3a4e1e1.deb"
 ARG MSF_STABLE_URL="https://fw-download.ubnt.com/data/msf/0332-uos-deb13-arm64-0.0.7-680bcb93-21c0-4b72-8592-3f5f3166189c.deb"
-ARG PROTECT_VERIFY_STABLE_URL="https://fw-download.ubnt.com/data/protect-verify/1f90-uos-deb13-arm64-0.9.1-80cbd13f-7e94-481f-adb0-07ad8a1f38c8.deb"
-# the trixie apt repo only carries ms/msr/msp/mst 5.1.290, Protect 7.2.105 needs >= 5.1.309
-ARG MS_STABLE_URL="https://fw-download.ubnt.com/data/ms/3cea-uos-deb13-arm64-5.1.309-959cf5b1-3d58-4cf4-a4f3-257f29f655c8.deb"
-ARG MSR_STABLE_URL="https://fw-download.ubnt.com/data/msr/24fe-uos-deb13-arm64-5.1.309-aaba59d2-719d-48ba-94ef-284421d8221c.deb"
-ARG MSP_STABLE_URL="https://fw-download.ubnt.com/data/msp/a41c-uos-deb13-arm64-5.1.309-75711aa0-f3ca-4cc8-9c29-a2fe91cee284.deb"
-ARG MST_STABLE_URL="https://fw-download.ubnt.com/data/mst/8435-uos-deb13-arm64-5.1.309-bb0c2a78-3b26-43be-a441-a95a0716bf98.deb"
+ARG PROTECT_VERIFY_STABLE_URL="https://fw-download.ubnt.com/data/protect-verify/18ac-uos-deb13-arm64-2.0.0-39a79ea2-2c6e-4fba-ac64-f269b3f63cce.deb"
+# the trixie apt repo only carries ms/msr/msp/mst 5.1.290, Protect 7.3.70 needs >= 5.1.317
+# (the firmware ships 5.1.319 and protect-verify 2.2.0, which are not published as separate debs)
+ARG MS_STABLE_URL="https://fw-download.ubnt.com/data/ms/b32c-uos-deb13-arm64-5.1.317-5eae6a76-f40a-431c-904d-093b97e4a19e.deb"
+ARG MSR_STABLE_URL="https://fw-download.ubnt.com/data/msr/bed2-uos-deb13-arm64-5.1.317-0198f358-184b-4012-a0a6-72cf979991c2.deb"
+ARG MSP_STABLE_URL="https://fw-download.ubnt.com/data/msp/47f8-uos-deb13-arm64-5.1.317-8961b7dd-b985-48e0-b5cf-f28e5406f1af.deb"
+ARG MST_STABLE_URL="https://fw-download.ubnt.com/data/mst/18a2-uos-deb13-arm64-5.1.317-f52b6d71-817b-4b22-bf99-bac8ecc7f247.deb"
 ARG RCLONE_STABLE_URL="https://fw-download.ubnt.com/data/unifi-rclone/9d16-uos-deb13-arm64-1.74.4-9790-8567b01b-5d50-4723-a54b-eb59fae8f931.deb"
+# unifi-user-assets (Protect >= 7.3) and its unifi-face-shared-lib dependency, same versions as in the firmware
+ARG USER_ASSETS_STABLE_URL="https://fw-download.ubnt.com/data/unifi-user-assets/e582-uos-deb13-arm64-0.6.22-6b5baf69-b8b0-49c6-800f-859eb2c5a4da.deb"
+ARG FACE_LIB_STABLE_URL="https://fw-download.ubnt.com/data/unifi-face-shared-lib/98da-uos-deb13-arm64-1.1.2-61dcce6e-64df-4d57-959a-3743a447a85f.deb"
 ARG DEB_UPDATE_URL="https://fw-update.ubnt.com/api/firmware-latest?filter=eq~~product~~{product}&filter=eq~~channel~~release&filter=eq~~platform~~uos-deb13-arm64"
 RUN --mount=target=/var/lib/apt/lists,type=cache --mount=target=/var/cache/apt,type=cache \
     --mount=type=bind,source=firmware/debs,target=/opt/debs \
@@ -200,6 +204,8 @@ RUN --mount=target=/var/lib/apt/lists,type=cache --mount=target=/var/cache/apt,t
         && wget --no-verbose --show-progress --progress=dot:giga -O /opt/msf.deb "$MSF_STABLE_URL" \
         && wget --no-verbose --show-progress --progress=dot:giga -O /opt/protect-verify.deb "$PROTECT_VERIFY_STABLE_URL" \
         && wget --no-verbose --show-progress --progress=dot:giga -O /opt/unifi-rclone.deb "$RCLONE_STABLE_URL" \
+        && wget --no-verbose --show-progress --progress=dot:giga -O /opt/unifi-user-assets.deb "$USER_ASSETS_STABLE_URL" \
+        && wget --no-verbose --show-progress --progress=dot:giga -O /opt/unifi-face-shared-lib.deb "$FACE_LIB_STABLE_URL" \
         && apt-get -y --no-install-recommends -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' \
             install /opt/debs/*.deb /opt/*.deb /opt/unifi-protect-deb/*.deb \
         && rm /opt/*.deb; \
